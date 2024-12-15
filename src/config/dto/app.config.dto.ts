@@ -1,5 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsInt, Max, Min } from 'class-validator';
+import { NestedConfigDto } from '../../decorators';
+import { PostgresConfigDto } from './postgres.config.dto';
 
 export class AppConfigDto {
   @IsInt()
@@ -8,6 +10,6 @@ export class AppConfigDto {
   @Type(() => Number)
   readonly port: number;
 
-  // @NestedConfigDto(PostgresConfigDto)
-  // readonly postgres: PostgresConfigDto;
+  @NestedConfigDto(PostgresConfigDto)
+  readonly postgres: PostgresConfigDto;
 }

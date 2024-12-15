@@ -1,9 +1,14 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
+import { Sequelize } from 'sequelize-typescript';
+import { SEQUELIZE } from './database';
 
 @Controller()
 export class AppController {
-  @Get('ping')
-  ping() {
-    return 'pong';
+  constructor(@Inject(SEQUELIZE) private readonly sequelize: Sequelize) {}
+
+  @Get('pg-version')
+  async pgVersion() {
+    const [version] = await this.sequelize.query('select version()');
+    return version;
   }
 }

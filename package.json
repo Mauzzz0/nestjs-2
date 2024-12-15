@@ -2,8 +2,16 @@
   "name": "nestjs",
   "version": "0.0.1",
   "scripts": {
+    "build": "nest build",
     "start": "nest start",
-    "start:dev": "nest start --watch"
+    "start:dev": "nest start --watch",
+
+    "migrate": "npm run build && npx sequelize-cli db:migrate",
+    "migrate:undo": "npm run build && npx sequelize-cli db:migrate:undo",
+    "migrate:generate": "npx ts-node src/migrations/generate.ts",
+
+    "services:up": "docker-compose up -d",
+    "services:down": "docker-compose down"
   },
   "prettier": {
     "singleQuote": true,
@@ -20,7 +28,11 @@
     "@nestjs/platform-fastify": "^10.4.15",
     "@nestjs/swagger": "^8.1.0",
     "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.1"
+    "class-validator": "^0.14.1",
+    "dayjs": "^1.11.13",
+    "pg": "^8.13.1",
+    "sequelize": "^6.37.5",
+    "sequelize-typescript": "^2.1.6"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
