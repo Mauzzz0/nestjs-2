@@ -1,5 +1,6 @@
 export enum Tables {
   users = 'users',
+  tasks = 'tasks',
 }
 
 export enum Columns {
@@ -10,4 +11,5 @@ export enum Columns {
   name = 'name',
   email = 'email',
   password = 'password',
+  title = 'title',
 }
