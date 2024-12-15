@@ -3,12 +3,16 @@ import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { APP_NAME, APP_VERSION } from './app.constants';
 import { AppModule } from './app.module';
-import { AppConfigService } from './config/app.config.service';
+import { bootstrapPipes, bootstrapSwagger } from './bootstrap';
+import { AppConfigService } from './config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter());
 
   app.enableShutdownHooks([ShutdownSignal.SIGINT, ShutdownSignal.SIGTERM]);
+
+  bootstrapSwagger(app);
+  bootstrapPipes(app);
 
   const configService = app.get<AppConfigService>(AppConfigService);
   await app.listen({ port: configService.port, host: '127.0.0.1' });
