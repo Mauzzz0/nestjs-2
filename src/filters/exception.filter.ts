@@ -6,10 +6,8 @@ export class ExceptionFilter implements IExceptionFilter {
   catch(error: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<FastifyReply>();
-    const status = error?.getStatus() || 500;
 
-    response.status(status).send({
-      statusCode: status,
+    response.status(500).send({
       message: error?.message ?? 'Internal Server Error',
     });
   }
