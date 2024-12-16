@@ -1,3 +1,5 @@
+import { Roles } from '../../app.types';
+
 export type SaveNewUser = {
   name: string;
   email: string;
@@ -5,6 +7,7 @@ export type SaveNewUser = {
 };
 
 export type UserDb = SaveNewUser & {
+  role: Roles;
   created_at: string;
   updated_at: string;
 };

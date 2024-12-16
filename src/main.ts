@@ -13,15 +13,14 @@ async function bootstrap() {
   const logger = new PinoService(pinoStrategy);
 
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { logger });
+  const configService = app.get<AppConfigService>(AppConfigService);
 
   app.useGlobalFilters(new ExceptionFilter());
-
   app.enableShutdownHooks([ShutdownSignal.SIGINT, ShutdownSignal.SIGTERM]);
 
   bootstrapSwagger(app);
   bootstrapPipes(app);
 
-  const configService = app.get<AppConfigService>(AppConfigService);
   await app.listen({ port: configService.port, host: '127.0.0.1' });
 
   const context = 'Bootstrap';

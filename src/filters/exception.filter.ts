@@ -8,6 +8,7 @@ export class ExceptionFilter implements IExceptionFilter {
     const response = ctx.getResponse<FastifyReply>();
 
     response.status(500).send({
+      error: error.name,
       message: error?.message ?? 'Internal Server Error',
     });
   }

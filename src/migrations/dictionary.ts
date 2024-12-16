@@ -10,6 +10,7 @@ export enum Columns {
 
   name = 'name',
   email = 'email',
-  password = 'password',
   title = 'title',
+  role = 'role',
+  password = 'password',
 }

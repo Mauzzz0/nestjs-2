@@ -45,7 +45,7 @@ module.exports = {
 
   down: wrapWithTransaction(
     async (transaction: Transaction, queryInterface: QueryInterface, sequelize: Sequelize): Promise<void> => {
-      return queryInterface.dropTable(Tables.users);
+      return queryInterface.dropTable(Tables.users, { transaction });
     },
   ),
 };
