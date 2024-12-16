@@ -42,6 +42,39 @@ export class AuthService {
     return this.makeTokenPair(user);
   }
 
+  async verify(token: string, type: 'access' | 'refresh'): Promise<boolean> {
+    const secrets = {
+      access: this.appConfigService.env.jwt.accessSecret,
+      refresh: this.appConfigService.env.jwt.refreshSecret,
+    };
+
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, secrets[type], (err) => {
+        if (err) {
+          reject(err);
+        }
+
+        resolve(true);
+      });
+    });
+  }
+
+  async decode(token: string, type: 'access' | 'refresh'): Promise<UserDb> {
+    const valid = await this.verify(token, 'access');
+
+    if (!valid) {
+      throw new UnauthorizedException();
+    }
+
+    const decoded = jwt.decode(token, { json: true });
+
+    if (!decoded) {
+      throw new UnauthorizedException();
+    }
+
+    return decoded as UserDb;
+  }
+
   private makeTokenPair(user: UserDb): TokenPair {
     const payload = { ...user };
 

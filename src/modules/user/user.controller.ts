@@ -1,9 +1,21 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { User } from '../../decorators';
+import { AuthGuard } from '../../guards';
 import { UserService } from './user.service';
+import { UserDb } from './user.types';
 
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Controller('user')
 export class UserController {
   constructor(private readonly service: UserService) {}
+
+  @ApiOperation({ summary: 'Получить пользователя из текущего Access токена' })
+  @Get('/profile')
+  async getProfile(@User() user: UserDb) {
+    return user;
+  }
 
   @Get('/:id')
   async getUserById(@Param('id', new ParseIntPipe()) id: number) {
