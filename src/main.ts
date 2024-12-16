@@ -5,6 +5,7 @@ import { APP_NAME, APP_VERSION } from './app.constants';
 import { AppModule } from './app.module';
 import { bootstrapPipes, bootstrapSwagger } from './bootstrap';
 import { AppConfigService } from './config';
+import { ExceptionFilter } from './filters';
 import { DEVELOPMENT_STRATEGY, PinoService, PRODUCTION_STRATEGY } from './logger';
 
 async function bootstrap() {
@@ -12,6 +13,8 @@ async function bootstrap() {
   const logger = new PinoService(pinoStrategy);
 
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { logger });
+
+  app.useGlobalFilters(new ExceptionFilter());
 
   app.enableShutdownHooks([ShutdownSignal.SIGINT, ShutdownSignal.SIGTERM]);
 
