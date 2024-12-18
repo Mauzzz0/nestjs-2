@@ -7,6 +7,7 @@ type EnvStructure<T = any> = {
 const appConfigMap = (): EnvStructure<AppConfigDto> => ({
   port: process.env.PORT,
   passwordRound: process.env.PASSWORD_ROUNDS,
+  telegramToken: process.env.TELEGRAM_TOKEN,
   postgres: {
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,
