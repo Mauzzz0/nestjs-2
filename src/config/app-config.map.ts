@@ -8,6 +8,7 @@ const appConfigMap = (): EnvStructure<AppConfigDto> => ({
   port: process.env.PORT,
   passwordRound: process.env.PASSWORD_ROUNDS,
   telegramToken: process.env.TELEGRAM_TOKEN,
+  rabbitUrl: process.env.RABBIT_URL,
   postgres: {
     host: process.env.POSTGRES_HOST,
     port: process.env.POSTGRES_PORT,

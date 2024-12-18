@@ -1,0 +1,1 @@
+export const RABBIT_CHANNEL = 'RABBIT_CHANNEL';

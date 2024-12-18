@@ -19,6 +19,9 @@ export class AppConfigDto {
   @IsString()
   readonly telegramToken: string;
 
+  @IsString()
+  readonly rabbitUrl: string;
+
   @NestedConfigDto(PostgresConfigDto)
   readonly postgres: PostgresConfigDto;
 
