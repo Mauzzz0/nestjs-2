@@ -32,7 +32,7 @@ const providers = [
 
 @Global()
 @Module({
-  providers,
+  providers: [...providers],
   exports: [...providers],
 })
 export class RabbitModule {}

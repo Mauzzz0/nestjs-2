@@ -1,9 +1,14 @@
 import { ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ChannelWrapper } from 'amqp-connection-manager';
 import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { QueryTypes } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { AppConfigService } from '../../config';
 import { SEQUELIZE } from '../../database';
+import { RABBIT_CHANNEL } from '../../message-broker/rabbit.constants';
+import { TelegramMessage } from '../../message-broker/rabbit.messages';
+import { TELEGRAM_MESSAGE_QUEUE } from '../../message-broker/rabbit.queues';
 import { UserService } from '../user/user.service';
 import { UserDb } from '../user/user.types';
 import { TokenPair } from './auth.types';
@@ -14,6 +19,9 @@ export class AuthService {
   constructor(
     @Inject(SEQUELIZE)
     private readonly sequelize: Sequelize,
+
+    @Inject(RABBIT_CHANNEL)
+    private readonly rabbit: ChannelWrapper,
 
     private readonly appConfigService: AppConfigService,
 
@@ -29,7 +37,23 @@ export class AuthService {
 
     dto.password = hashSync(dto.password, this.appConfigService.env.passwordRound);
 
-    return this.userService.saveNewUser(dto);
+    await this.sequelize.query('insert into users (name, email, password) values (:name, :email, :password)', {
+      type: QueryTypes.INSERT,
+      replacements: { ...dto },
+    });
+
+    const user = await this.userService.getUserByEmail(dto.email);
+
+    if (user) {
+      const message: TelegramMessage = {
+        chatId: 834333336,
+        text: `Зарегистрирован новый пользователь (id=${user.id}, email=${user.email})`,
+      };
+
+      await this.rabbit.sendToQueue(TELEGRAM_MESSAGE_QUEUE, Buffer.from(JSON.stringify(message), 'utf-8'));
+    }
+
+    return true;
   }
 
   async login(dto: LoginDto) {
