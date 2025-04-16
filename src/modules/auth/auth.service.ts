@@ -4,7 +4,7 @@ import { compareSync, hashSync } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { QueryTypes } from 'sequelize';
 import { Sequelize } from 'sequelize-typescript';
-import { AppConfigService } from '../../config';
+import { appConfig } from '../../config';
 import { SEQUELIZE } from '../../database';
 import { RABBIT_CHANNEL } from '../../message-broker/rabbit.constants';
 import { TelegramMessage } from '../../message-broker/rabbit.messages';
@@ -23,8 +23,6 @@ export class AuthService {
     @Inject(RABBIT_CHANNEL)
     private readonly rabbit: ChannelWrapper,
 
-    private readonly appConfigService: AppConfigService,
-
     private readonly userService: UserService,
   ) {}
 
@@ -35,7 +33,7 @@ export class AuthService {
       throw new ConflictException(`User already exists`);
     }
 
-    dto.password = hashSync(dto.password, this.appConfigService.env.passwordRound);
+    dto.password = hashSync(dto.password, appConfig.passwordRound);
 
     await this.sequelize.query('insert into users (name, email, password) values (:name, :email, :password)', {
       type: QueryTypes.INSERT,
@@ -68,8 +66,8 @@ export class AuthService {
 
   async verify(token: string, type: 'access' | 'refresh'): Promise<boolean> {
     const secrets = {
-      access: this.appConfigService.env.jwt.accessSecret,
-      refresh: this.appConfigService.env.jwt.refreshSecret,
+      access: appConfig.jwt.accessSecret,
+      refresh: appConfig.jwt.refreshSecret,
     };
 
     return new Promise((resolve, reject) => {
@@ -102,8 +100,8 @@ export class AuthService {
   private makeTokenPair(user: UserDb): TokenPair {
     const payload = { ...user };
 
-    const accessToken = jwt.sign(payload, this.appConfigService.env.jwt.accessSecret, { expiresIn: '1h' });
-    const refreshToken = jwt.sign(payload, this.appConfigService.env.jwt.refreshSecret);
+    const accessToken = jwt.sign(payload, appConfig.jwt.accessSecret, { expiresIn: '1h' });
+    const refreshToken = jwt.sign(payload, appConfig.jwt.refreshSecret);
 
     return { accessToken, refreshToken };
   }

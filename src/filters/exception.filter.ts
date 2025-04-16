@@ -7,6 +7,7 @@ export class ExceptionFilter implements IExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<FastifyReply>();
 
+    // RUSLAN: Кастомные ошибки
     response.status(500).send({
       error: error.name,
       message: error?.message ?? 'Internal Server Error',

@@ -4,16 +4,15 @@ import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify
 import { APP_NAME, APP_VERSION } from './app.constants';
 import { AppModule } from './app.module';
 import { bootstrapPipes, bootstrapSwagger } from './bootstrap';
-import { AppConfigService } from './config';
+import { appConfig } from './config';
 import { ExceptionFilter } from './filters';
 import { DEVELOPMENT_STRATEGY, PinoService, PRODUCTION_STRATEGY } from './logger';
 
 async function bootstrap() {
-  const pinoStrategy = process.env.NODE_ENV === 'development' ? DEVELOPMENT_STRATEGY : PRODUCTION_STRATEGY;
+  const pinoStrategy = process.env.NODE_ENV === 'production' ? PRODUCTION_STRATEGY : DEVELOPMENT_STRATEGY;
   const logger = new PinoService(pinoStrategy);
 
   const app = await NestFactory.create<NestFastifyApplication>(AppModule, new FastifyAdapter(), { logger });
-  const configService = app.get<AppConfigService>(AppConfigService);
 
   app.useGlobalFilters(new ExceptionFilter());
   app.enableShutdownHooks([ShutdownSignal.SIGINT, ShutdownSignal.SIGTERM]);
@@ -21,7 +20,7 @@ async function bootstrap() {
   bootstrapSwagger(app);
   bootstrapPipes(app);
 
-  await app.listen({ port: configService.port, host: '127.0.0.1' });
+  await app.listen({ port: appConfig.port, host: '127.0.0.1' });
 
   const context = 'Bootstrap';
   logger.log(`Listening on ${JSON.stringify(app.getHttpServer().address())}`, context);

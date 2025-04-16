@@ -1,10 +1,12 @@
+import { plainToInstance } from 'class-transformer';
+import { validateSync } from 'class-validator';
 import { AppConfigDto } from './dto';
 
 type EnvStructure<T = any> = {
   [key in keyof T]: T[key] extends object ? EnvStructure<T[key]> : string | undefined;
 };
 
-const appConfigMap = (): EnvStructure<AppConfigDto> => ({
+const rawConfig = (): EnvStructure<AppConfigDto> => ({
   port: process.env.PORT,
   passwordRound: process.env.PASSWORD_ROUNDS,
   telegramToken: process.env.TELEGRAM_TOKEN,
@@ -22,4 +24,14 @@ const appConfigMap = (): EnvStructure<AppConfigDto> => ({
   },
 });
 
-export default appConfigMap;
+export const appConfig = plainToInstance(AppConfigDto, rawConfig);
+const errors = validateSync(appConfig);
+
+if (errors.length) {
+  console.error('Config validation error');
+  errors.forEach((error) => {
+    console.error(error.toString());
+  });
+  console.warn('Process will now exit');
+  throw Error('Envs validation failed');
+}

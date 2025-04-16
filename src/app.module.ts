@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { AppConfigModule } from './config';
 import { DatabaseModule } from './database';
 import { HealthCheckModule } from './health-check/health-check.module';
 import { RabbitModule } from './message-broker/rabbit.module';
@@ -10,16 +9,7 @@ import { TelegramModule } from './modules/telegram/telegram.module';
 import { UserModule } from './modules/user/user.module';
 
 @Module({
-  imports: [
-    HealthCheckModule,
-    AppConfigModule,
-    DatabaseModule,
-    RabbitModule,
-    TelegramModule,
-    AuthModule,
-    UserModule,
-    TaskModule,
-  ],
+  imports: [HealthCheckModule, DatabaseModule, RabbitModule, TelegramModule, AuthModule, UserModule, TaskModule],
   controllers: [AppController],
 })
 export class AppModule {}

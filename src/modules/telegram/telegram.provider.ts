@@ -1,14 +1,14 @@
 import { Logger, Provider } from '@nestjs/common';
 import { Telegraf } from 'telegraf';
-import { AppConfigService } from '../../config';
+import { appConfig } from '../../config';
 import { TELEGRAM_BOT } from './telegram.constants';
 
 export const telegramProvider: Provider<Telegraf> = {
   provide: TELEGRAM_BOT,
-  useFactory: async (appConfigService: AppConfigService) => {
+  useFactory: async () => {
     const logger = new Logger('Telegram');
 
-    const bot = new Telegraf(appConfigService.env.telegramToken);
+    const bot = new Telegraf(appConfig.telegramToken);
 
     bot.launch();
 
@@ -16,5 +16,4 @@ export const telegramProvider: Provider<Telegraf> = {
 
     return bot;
   },
-  inject: [AppConfigService],
 };

@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { AmqpConnectionManager, connect } from 'amqp-connection-manager';
 import { Channel } from 'amqplib';
-import { AppConfigService } from '../config';
+import { appConfig } from '../config';
 import { RABBIT_CHANNEL } from './rabbit.constants';
 import { QUEUES } from './rabbit.queues';
 
@@ -10,10 +10,9 @@ const RABBIT_CONNECTION = Symbol('RABBIT_CONNECTION');
 const providers = [
   {
     provide: RABBIT_CONNECTION,
-    useFactory: (appConfig: AppConfigService) => {
-      return connect(appConfig.env.rabbitUrl);
+    useFactory: () => {
+      return connect(appConfig.rabbitUrl);
     },
-    inject: [AppConfigService],
   },
   {
     provide: RABBIT_CHANNEL,
