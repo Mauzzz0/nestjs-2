@@ -1,7 +1,7 @@
-import { FastifyRequest } from 'fastify';
+import { Request } from 'express';
 import { UserDb } from './modules/user/user.types';
 
-export type RequestWithUser = FastifyRequest & {
+export type RequestWithUser = Request & {
   user: UserDb;
 };
 

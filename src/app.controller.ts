@@ -1,14 +1,34 @@
-import { Controller, Get, Inject } from '@nestjs/common';
-import { Sequelize } from 'sequelize-typescript';
-import { SEQUELIZE } from './database';
+import { BadRequestException, Controller, Get, NotFoundException, Query, UnauthorizedException } from '@nestjs/common';
+import { IsBoolean, IsNumber, IsString } from 'class-validator';
+
+export class ExampleQueryDto {
+  @IsString()
+  name: string;
+
+  @IsNumber()
+  age: string;
+
+  @IsBoolean()
+  isMale: boolean;
+}
 
 @Controller()
 export class AppController {
-  constructor(@Inject(SEQUELIZE) private readonly sequelize: Sequelize) {}
+  @Get('bad-request-query-auto')
+  public bra(@Query() q: ExampleQueryDto) {}
 
-  @Get('pg-version')
-  async pgVersion() {
-    const [version] = await this.sequelize.query('select version()');
-    return version;
+  @Get('bad-request-manual')
+  public brm() {
+    throw new BadRequestException('Плохие данные');
+  }
+
+  @Get('unauthorized')
+  public un() {
+    throw new UnauthorizedException('Неверный пароль');
+  }
+
+  @Get('not-found')
+  public nf() {
+    throw new NotFoundException('Такого нет');
   }
 }
