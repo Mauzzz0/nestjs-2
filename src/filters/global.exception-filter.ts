@@ -16,14 +16,12 @@ export class GlobalExceptionFilter implements ExceptionFilter {
 
     const data = this.getResponseData(exception);
 
-    // this.logger.error({
-    //   message: GlobalExceptionFilter.validationPipeMessage,
-    //   meta: error,
-    // });
-    // this.logger.error(
-    //   (exception as HttpException).message,
-    //   status === HttpStatus.INTERNAL_SERVER_ERROR ? (exception as HttpException).stack : undefined,
-    // );
+    this.logger.error({
+      status: data.status,
+      title: data.title,
+      message: data.message,
+      meta: data.meta,
+    });
 
     response.status(data.status).json({
       status: data.status,
@@ -34,6 +32,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   }
 
   private getResponseData(exception: unknown): ErrorObject {
+    // If this is Validation Error => safely return title and message, and try to include some validation details in meta property
     if (exception instanceof BadRequestException) {
       const meta = (exception?.getResponse() as any)?.message;
       return {
@@ -44,10 +43,13 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       };
     }
 
+    // If this is Nest.JS built-in exception => safely return title and message
     if (exception instanceof HttpException) {
       return { status: exception.getStatus(), title: exception.name, message: exception.message };
     }
 
+    // If this is not Nest.JS built-in exception => don't show error title or message due to security reasons.
+    // Just send "500 Interval Server Error" without any details
     return { status: 500, title: 'Internal Server Error', message: 'Unknown server error' };
   }
 }
