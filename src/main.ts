@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { APP_NAME, APP_VERSION } from './app.constants';
 import { AppModule } from './app.module';
 import { bootstrapPipes, bootstrapSwagger } from './bootstrap';
-import { GlobalExceptionFilter } from './filters/globalException.filter';
+import { GlobalExceptionFilter } from './filters/global.exception-filter';
 import { JsonApiSerializerInterceptor } from './interceptors/JsonApiSerializer.interceptor';
 import { DEVELOPMENT_STRATEGY, PinoService, PRODUCTION_STRATEGY } from './logger';
 
